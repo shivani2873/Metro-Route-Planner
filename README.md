@@ -1,63 +1,68 @@
+
 # Metro-Route-Planner
-## Project Description
 
-The Metro Route Planner is a C++ application designed to assist users in finding optimal routes between metro stations. It leverages multiple algorithms to provide the shortest, cheapest, and best paths based on different criteria like distance and cost. This tool can be particularly useful for commuters and tourists navigating a metro system.
+## Project Overview
 
-## Features
+The **Metro Route Planner** is a C++ based application built to help users identify optimal routes between metro stations. It incorporates various graph traversal algorithms to deliver the shortest, most economical, and overall best routes based on criteria such as distance and fare. This application can be highly beneficial for daily commuters or tourists navigating through a metro network.
 
-- **Shortest Path**: Uses Dijkstra's algorithm to find the shortest path between two stations.
-- **Cheapest Path**: Utilizes a BFS algorithm to find the path with the least cost.
-- **Best Path**: Implements a DFS algorithm to find the best path based on a combination of criteria.
+## Key Features
 
-## Algorithms Used
+* **Shortest Route**: Calculates the minimum distance route using Dijkstra’s algorithm.
+* **Lowest Cost Route**: Applies the Breadth-First Search (BFS) algorithm to find the route with the lowest fare.
+* **Optimal Route**: Uses Depth-First Search (DFS) to evaluate and choose the best route considering multiple factors.
 
-1. **Dijkstra's Algorithm**: For finding the shortest path.
-2. **Breadth-First Search (BFS)**: For finding the cheapest path.
-3. **Depth-First Search (DFS)**: For finding the best path.
+## Algorithms Implemented
 
-## Usage
+1. **Dijkstra’s Algorithm** – Determines the shortest distance between two stations.
+2. **Breadth-First Search (BFS)** – Finds the most cost-effective route.
+3. **Depth-First Search (DFS)** – Selects the most optimal route based on combined metrics.
 
-### Example Graph
-The project includes an example graph representing a hypothetical metro network with the following stations:
+## Usage Instructions
 
-- Station A
-- Station B
-- Station C
-- Station D
-- Station E
-- Station F
-- Station G
+### Sample Metro Map
 
-### Running the Program
-To run the program, compile the C++ code using a compatible compiler and execute the resulting binary. 
+The planner works on a sample network with metro stations including:
 
-bash
+* Station A
+* Station B
+* Station C
+* Station D
+* Station E
+* Station F
+* Station G
+
+### How to Run
+
+Compile and execute the C++ source file using the terminal:
+
+```bash
 g++ -o metro_route_planner metro_route_planner.cpp
 ./metro_route_planner
+```
 
-The program will output the shortest, cheapest, and best paths between the specified source and destination stations.
+Once executed, the application will display routes based on user input for source and destination stations.
 
-### Example Output
+### Sample Output
 
-Shortest Path (Distance: 20, Cost: 80): Station E -> Station C -> Station B
-Cheapest Path (Distance: 20, Cost: 60): Station E -> Station C -> Station B
+```
+Shortest Path (Distance: 20, Cost: 80): Station E -> Station C -> Station B  
+Cheapest Path (Distance: 20, Cost: 60): Station E -> Station C -> Station B  
 Best Path (Distance: 20, Cost: 60): Station E -> Station C -> Station B
+```
 
+## Code Organization
 
-## Code Structure
+* **Station Class**: Stores station details such as ID, name, and metro line.
+* **Edge Class**: Represents connections between stations including metrics like distance and fare.
+* **dijkstra()**: Implements Dijkstra’s logic to find shortest distance.
+* **bfs()**: Uses BFS for lowest cost traversal.
+* **dfs()**: Employs DFS to determine an optimal route.
 
-- **Station**: Represents a metro station with attributes like id, name, and line number.
-- **Edge**: Represents an edge between two stations with attributes like source, destination, distance, and cost.
-- **dijkstra()**: Function to find the shortest path using Dijkstra's algorithm.
-- **bfs()**: Function to find the cheapest path using BFS.
-- **dfs()**: Function to find the best path using DFS.
+## Potential Improvements
 
-## Future Enhancements
+* Integrate real-time metro scheduling or delay data.
+* Include additional edge/station attributes like time of travel and transfer stations.
+* Build a graphical interface to enhance usability and user experience.
 
-- Add support for real-time data integration.
-- Expand the attributes of stations and edges to include factors like travel time and transportation mode.
-- Implement a graphical user interface for better user interaction.
-
-## Contributions
-
+## Contribution Guidelines
 Contributions are welcome! Please fork the repository and submit a pull request with your improvements.
