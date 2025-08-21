@@ -3,12 +3,9 @@
 #include <queue>
 #include <limits>
 #include <algorithm>
-
 using namespace std;
 
-// =======================
 // Station & Edge Structs
-// =======================
 struct Station {
     int id;
     string name;
@@ -21,63 +18,42 @@ struct Edge {
     int cost;     // in Rs
 };
 
-// =======================
-// Dijkstra (for shortest distance OR cheapest cost)
-// =======================
+// ------------------ Dijkstra for Shortest Distance ------------------
 vector<int> dijkstra(const vector<vector<Edge>>& graph, int source, int destination,
-                     const vector<Station>& stations, int& finalDistance, int& finalCost, bool minimizeDistance = true) {
+                     const vector<Station>& stations, int& finalDistance, int& finalCost) {
     int n = graph.size();
-
-    // distance[] can store either distance OR cost based on minimizeDistance flag
     vector<int> dist(n, numeric_limits<int>::max());
-    vector<int> cost(n, numeric_limits<int>::max());
+    vector<int> cost(n, 0);
     vector<int> parent(n, -1);
 
-    // Min-heap: {weight, node}
     priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
-
     dist[source] = 0;
-    cost[source] = 0;
     pq.push({0, source});
 
     while (!pq.empty()) {
-        auto top = pq.top();   // ✅ fix
+        auto top = pq.top();   
         int currWeight = top.first;
         int u = top.second;
         pq.pop();
 
-        if (u == destination) break; // Stop early when destination found
+        if (u == destination) break;
 
         for (auto& edge : graph[u]) {
             int v = edge.destination;
             int newDist = dist[u] + edge.distance;
-            int newCost = cost[u] + edge.cost;
 
-            // Case 1: Minimize distance
-            if (minimizeDistance && newDist < dist[v]) {
+            if (newDist < dist[v]) {
                 dist[v] = newDist;
-                cost[v] = newCost;
+                cost[v] = cost[u] + edge.cost;
                 parent[v] = u;
                 pq.push({dist[v], v});
-            }
-
-            // Case 2: Minimize cost
-            else if (!minimizeDistance && newCost < cost[v]) {
-                cost[v] = newCost;
-                dist[v] = newDist;
-                parent[v] = u;
-                pq.push({cost[v], v});
             }
         }
     }
 
     // Reconstruct path
     vector<int> path;
-    int cur = destination;
-    while (cur != -1) {
-        path.push_back(cur);
-        cur = parent[cur];
-    }
+    for (int cur = destination; cur != -1; cur = parent[cur]) path.push_back(cur);
     reverse(path.begin(), path.end());
 
     finalDistance = dist[destination];
@@ -85,9 +61,46 @@ vector<int> dijkstra(const vector<vector<Edge>>& graph, int source, int destinat
     return path;
 }
 
-// =======================
-// DFS (for demonstration of exploring all paths)
-// =======================
+// ------------------ BFS for Cheapest Cost ------------------
+vector<int> bfsCheapest(const vector<vector<Edge>>& graph, int source, int destination,
+                        const vector<Station>& stations, int& finalDistance, int& finalCost) {
+    int n = graph.size();
+    vector<int> cost(n, numeric_limits<int>::max());
+    vector<int> dist(n, 0);
+    vector<int> parent(n, -1);
+
+    queue<int> q;
+    cost[source] = 0;
+    q.push(source);
+
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+
+        for (auto& edge : graph[u]) {
+            int v = edge.destination;
+            int newCost = cost[u] + edge.cost;
+
+            if (newCost < cost[v]) {
+                cost[v] = newCost;
+                dist[v] = dist[u] + edge.distance;
+                parent[v] = u;
+                q.push(v);
+            }
+        }
+    }
+
+    // Reconstruct path
+    vector<int> path;
+    for (int cur = destination; cur != -1; cur = parent[cur]) path.push_back(cur);
+    reverse(path.begin(), path.end());
+
+    finalDistance = dist[destination];
+    finalCost = cost[destination];
+    return path;
+}
+
+// ------------------ DFS for Least Hops ------------------
 void dfsUtil(const vector<vector<Edge>>& graph, int current, int destination,
              vector<bool>& visited, vector<int>& path, vector<int>& bestPath,
              int& bestDistance, int& bestCost) {
@@ -96,7 +109,6 @@ void dfsUtil(const vector<vector<Edge>>& graph, int current, int destination,
     path.push_back(current);
 
     if (current == destination) {
-        // Calculate distance and cost
         int totalDist = 0, totalCost = 0;
         for (int i = 1; i < path.size(); i++) {
             int u = path[i - 1], v = path[i];
@@ -107,7 +119,6 @@ void dfsUtil(const vector<vector<Edge>>& graph, int current, int destination,
                 }
             }
         }
-        // Keep the path with fewer hops
         if (bestPath.empty() || path.size() < bestPath.size()) {
             bestPath = path;
             bestDistance = totalDist;
@@ -133,9 +144,7 @@ vector<int> dfs(const vector<vector<Edge>>& graph, int source, int destination,
     return bestPath;
 }
 
-// =======================
-// Main
-// =======================
+// ------------------ MAIN ------------------
 int main() {
     int numStations = 7;
     vector<Station> stations = {
@@ -163,16 +172,16 @@ int main() {
 
     // Shortest Path (minimize distance)
     int shortestDist, shortestCost;
-    vector<int> shortestPath = dijkstra(graph, source, destination, stations, shortestDist, shortestCost, true);
+    vector<int> shortestPath = dijkstra(graph, source, destination, stations, shortestDist, shortestCost);
     cout << "Shortest Path (Distance: " << shortestDist << ", Cost: " << shortestCost << "): ";
     for (int i = 0; i < shortestPath.size(); i++) {
         cout << stations[shortestPath[i]].name << (i == shortestPath.size()-1 ? "" : " -> ");
     }
     cout << "\n";
 
-    // Cheapest Path (minimize cost)
+    // Cheapest Path (minimize cost using BFS)
     int cheapestDist, cheapestCost;
-    vector<int> cheapestPath = dijkstra(graph, source, destination, stations, cheapestDist, cheapestCost, false);
+    vector<int> cheapestPath = bfsCheapest(graph, source, destination, stations, cheapestDist, cheapestCost);
     cout << "Cheapest Path (Distance: " << cheapestDist << ", Cost: " << cheapestCost << "): ";
     for (int i = 0; i < cheapestPath.size(); i++) {
         cout << stations[cheapestPath[i]].name << (i == cheapestPath.size()-1 ? "" : " -> ");
